@@ -1,0 +1,14 @@
+@import "tailwindcss";
+
+/* Tailwind CSS v4 theme customizations */
+@theme {
+  /* Colors */
+  --color-primary: #a4243b; /* Amaranth purple */
+  --color-secondary: #E0D4A8; /* Ecru */
+  --color-accent: #d8973c; /* Butterscotch */
+  --color-tertiary: #F0E8C4; /* Alloy orange */
+  --color-neutral: #273e47; /* Charcoal */
+
+  /* Font family */
+  --font-sans: "Ancizar sans", sans-serif;
+}
