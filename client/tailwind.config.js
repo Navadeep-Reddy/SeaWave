@@ -6,5 +6,13 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
+  theme: {
+    extend: {
+      fontFamily: {
+        lobster: ["Lobster", "cursive"],
+        poppins: ["Poppins", "sans-serif"],
+      },
+    },
+  },
   plugins: [],
 };
