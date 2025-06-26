@@ -1,14 +1,17 @@
 @import "tailwindcss";
+/* Import Poppins from Google Fonts */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
 
 /* Tailwind CSS v4 theme customizations */
 @theme {
   /* Colors */
-  --color-primary: #a4243b; /* Amaranth purple */
-  --color-secondary: #E0D4A8; /* Ecru */
-  --color-accent: #d8973c; /* Butterscotch */
-  --color-tertiary: #F0E8C4; /* Alloy orange */
-  --color-neutral: #273e47; /* Charcoal */
+  --color-veryLightBlue: #f7fdff;
+  --color-offBlue: #d5effb;
+  --color-darkOffBlue: #b1ddf2;
+  --color-textBlue: #154c79;
+  --color-weirdBlue: #8dcbed;
+  --color-greenBlue: #7bb4c6;
 
   /* Font family */
-  --font-sans: "Ancizar sans", sans-serif;
+  --font-sans: "Ancizar sans", "Poppins", sans-serif;
 }
