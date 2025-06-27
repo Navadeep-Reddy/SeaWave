@@ -34,7 +34,7 @@ public class InventoryService {
         return events.stream()
                 .map(event -> EventInventoryResponse
                         .builder().event(event.getName())
-                .capacity(event.getTotalCapacity())
+                .capacity(event.getLeftCapacity())
                 .venue(event.getVenue()).build())
                 .collect(Collectors.toList());
     }
@@ -49,6 +49,22 @@ public class InventoryService {
                 .venueId(venue.getId())
                 .venueName(venue.getName())
                 .venueCapacity(venue.getTotalCapacity())
+                .build();
+    }
+
+    public EventInventoryResponse getEventInventory(Long eventID) {
+        Event event = eventRepository.findById(eventID).orElse(null);
+
+        if (event == null){
+            throw new RuntimeException("Event does not exist");
+        }
+
+        return EventInventoryResponse.builder()
+                .eventId(event.getId())
+                .capacity(event.getLeftCapacity())
+                .event(event.getName())
+                .venue(event.getVenue())
+                .ticketPrice(event.getTicketPrice())
                 .build();
     }
 }
