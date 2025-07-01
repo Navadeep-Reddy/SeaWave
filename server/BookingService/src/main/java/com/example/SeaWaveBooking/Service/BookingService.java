@@ -20,7 +20,7 @@ public class BookingService {
     private final InventoryServiceClient inventoryClient;
 
     //we write the booking event into a topic
-    private KafkaTemplate<String, BookingEvent> kafkaTemplate;
+    private final KafkaTemplate<String, BookingEvent> kafkaTemplate;
 
     public BookingService(CustomerRepository repo, InventoryServiceClient client, KafkaTemplate<String, BookingEvent> kafkaTemplate){
         this.customerRepository = repo;
@@ -52,12 +52,19 @@ public class BookingService {
         //pushing this event to the broker
         //(name of topic, value)
         kafkaTemplate.send("booking", event);
+        log.info("Booking event has been place into topic {}", event);
 
-        return BookingResponse.builder().build();
+        return BookingResponse.builder()
+                .userId(customer.getId())
+                .totalPrice(event.getTotalPrice())
+                .eventId(event.getEventId())
+                .ticketCount(request.getTicketQuantity())
+                .build();
     }
 
     private BookingEvent createBookingEvent(Customer customer, InventoryResponse response, BookingRequest request){
         return BookingEvent.builder()
+                .userId(customer.getId())
                 .eventId(response.getEventId())
                 .ticketCount(request.getTicketQuantity())
                 .totalPrice(BigDecimal.valueOf((long) request.getTicketQuantity() * request.getTicketQuantity()))

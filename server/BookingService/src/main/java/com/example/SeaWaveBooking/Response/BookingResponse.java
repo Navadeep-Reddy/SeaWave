@@ -3,12 +3,13 @@ package com.example.SeaWaveBooking.Response;
 import lombok.Builder;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Data
 @Builder
 public class BookingResponse {
-    private Long bookingId;
     private Long userId;
     private Long eventId;
-    private Long ticketCount;
-    private String ticketPrice;
+    private int ticketCount;
+    private BigDecimal totalPrice;
 }
