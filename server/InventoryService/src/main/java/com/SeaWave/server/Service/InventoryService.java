@@ -20,6 +20,7 @@ public class InventoryService {
     private EventRepository eventRepository;
     private VenueRepository venueRepository;
 
+
     @Autowired
     public void setEventRepository(EventRepository repo){
         this.eventRepository = repo;
