@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/inventory")
 @CrossOrigin
 public class InventoryController {
 
@@ -21,17 +21,17 @@ public class InventoryController {
         this.inventoryService = inventoryService;
     }
 
-    @GetMapping("/inventory/events")
+    @GetMapping("/events")
     public List<EventInventoryResponse> getAllEvents(){
         return inventoryService.getAllEvents();
     }
 
-    @GetMapping("/inventory`/venue/{venueId}")
+    @GetMapping("/venue/{venueId}")
     public VenueLocationResponse getVenueById(@PathVariable Long venueId){
         return inventoryService.getLocationById(venueId);
     }
 
-    @GetMapping("/inventory/event/{eventID}")
+    @GetMapping("/event/{eventID}")
     public EventInventoryResponse inventoryForEvent(@PathVariable Long eventID){
         return inventoryService.getEventInventory(eventID);
     }
