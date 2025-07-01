@@ -6,9 +6,11 @@ import com.example.SeaWaveBooking.Repository.CustomerRepository;
 import com.example.SeaWaveBooking.Request.BookingRequest;
 import com.example.SeaWaveBooking.Response.BookingResponse;
 import com.example.SeaWaveBooking.Response.InventoryResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class BookingService {
     private final CustomerRepository customerRepository;
     private final InventoryServiceClient inventoryClient;
@@ -27,7 +29,12 @@ public class BookingService {
 
         //check if capacity / tickets is available
         InventoryResponse inventoryResponse = inventoryClient.getInventory(request.getEventId());
-        System.out.println("The Inventory Response is:" + inventoryResponse);
+        if (inventoryResponse.getCapacity() < request.getTicketId()){
+            throw new RuntimeException("Insufficient tickets present");
+        }
+
+        String logData = "The Inventory Response is:" + inventoryResponse;
+        log.info(logData);
 
         //get event details to then get venue details
 

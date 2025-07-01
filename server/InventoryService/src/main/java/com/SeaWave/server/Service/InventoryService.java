@@ -6,6 +6,7 @@ import com.SeaWave.server.Repository.EventRepository;
 import com.SeaWave.server.Repository.VenueRepository;
 import com.SeaWave.server.Response.EventInventoryResponse;
 import com.SeaWave.server.Response.VenueLocationResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class InventoryService {
 
     private EventRepository eventRepository;
@@ -59,6 +61,7 @@ public class InventoryService {
             throw new RuntimeException("Event does not exist");
         }
 
+        log.info(event.getVenue().getName());
         return EventInventoryResponse.builder()
                 .eventId(event.getId())
                 .capacity(event.getLeftCapacity())
