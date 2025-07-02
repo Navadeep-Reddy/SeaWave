@@ -34,6 +34,11 @@ services:
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181  # Removed quotes
       ZOOKEEPER_TICK_TIME: 2000    # Changed from "3000" to 2000
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "2181"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   kafka-broker:
     image: confluentinc/cp-kafka:6.2.0
@@ -42,7 +47,9 @@ services:
       - "9092:9092"
       - "29092:29092"
     depends_on:
-      - kafkaKeeper
+      kafkaKeeper:
+        condition: service_healthy
+        
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: 'kafkaKeeper:2181'
