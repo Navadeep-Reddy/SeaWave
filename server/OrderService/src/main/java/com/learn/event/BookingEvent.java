@@ -1,4 +1,4 @@
-package example.navadeep.bookingservice.event;
+package com.learn.event;
 
 
 import lombok.AllArgsConstructor;
