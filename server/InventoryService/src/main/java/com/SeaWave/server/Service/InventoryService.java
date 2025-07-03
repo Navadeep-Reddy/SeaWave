@@ -8,6 +8,7 @@ import com.SeaWave.server.Response.EventInventoryResponse;
 import com.SeaWave.server.Response.VenueLocationResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -70,5 +71,15 @@ public class InventoryService {
                 .venue(event.getVenue())
                 .ticketPrice(event.getTicketPrice())
                 .build();
+    }
+
+    public ResponseEntity<Void> updateCapacity(Long eventID, int ticketsBooked) {
+        Event event = eventRepository.findById(eventID).orElse(null);
+        assert event != null;
+        event.setLeftCapacity(event.getTotalCapacity() - ticketsBooked);
+        log.info("The updated event is {}", event);
+
+        eventRepository.save(event);
+        return ResponseEntity.ok().build();
     }
 }

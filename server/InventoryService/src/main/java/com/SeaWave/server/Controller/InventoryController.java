@@ -5,6 +5,7 @@ import com.SeaWave.server.Response.EventInventoryResponse;
 import com.SeaWave.server.Response.VenueLocationResponse;
 import com.SeaWave.server.Service.InventoryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -34,5 +35,11 @@ public class InventoryController {
     @GetMapping("/event/{eventID}")
     public EventInventoryResponse inventoryForEvent(@PathVariable Long eventID){
         return inventoryService.getEventInventory(eventID);
+    }
+
+    //update capacity of event after booking
+    @PutMapping("/event/capacity/{eventID}/{capacity}")
+    public ResponseEntity<Void> updateEventCapacity(@PathVariable Long eventID,@PathVariable int capacity){
+        return inventoryService.updateCapacity(eventID, capacity);
     }
 }
