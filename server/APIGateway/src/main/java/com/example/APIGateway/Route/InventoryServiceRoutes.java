@@ -23,6 +23,11 @@ public class InventoryServiceRoutes {
                         .path("/api/v2/inventory/event/{eventId}")
                         .filters(f -> f.rewritePath("/api/v2/inventory/event/(?<eventId>.*)", "/api/v1/inventory/event/${eventId}"))
                         .uri("http://localhost:8080"))
+                .route("update-capacity", r -> r
+                        .path("/api/v2/capacity/{eventId}/{capacity}")
+                        .filters(f -> f.rewritePath("/api/v2/capacity/(?<eventId>.*)/(?<capacity>.*)", "/api/v1/inventory/event/capacity/${eventId}/${capacity}"))
+                        .uri("http://localhost:8080")
+                )
                 .build();
     }
 }
