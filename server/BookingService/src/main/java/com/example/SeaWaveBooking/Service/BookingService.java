@@ -38,7 +38,7 @@ public class BookingService {
 
         //check if capacity / tickets is available
         InventoryResponse inventoryResponse = inventoryClient.getInventory(request.getEventId());
-        if (inventoryResponse.getCapacity() < request.getTicketId()){
+        if (inventoryResponse.getCapacity() < request.getTicketQuantity()){
             throw new RuntimeException("Insufficient tickets present");
         }
 
