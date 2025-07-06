@@ -12,8 +12,8 @@ public class BookingServiceRoutes {
     public RouteLocator bookingServiceRouteLocator(RouteLocatorBuilder builder) {
         return builder.routes()
             .route("booking-service", r -> r
-                .path("/api/v1/booking")
-                .filters(f -> f.rewritePath("/api/v1/booking", "/api/v1/booking/event"))
+                .path("/api/v2/booking")
+                .filters(f -> f.rewritePath("/api/v2/booking", "/api/v1/booking/event"))
                 .uri("http://localhost:8081"))
             .build();
     }
