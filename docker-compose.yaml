@@ -27,6 +27,22 @@ services:
     volumes:
       - keycloak_data:/var/lib/postgresql/data
 
+  keycloak:
+    image: keycloak/keycloak:nightly
+    environment:
+      DB_VENDOR: POSTGRES
+      DB_PASSWORD: root
+      DB_USERNAME: navadeep
+      DB_ADDR: keycloakdb
+      DB_PORT: 5433
+      DB_DATABASE: keycloak
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    ports:
+      - "8091:8080"
+    depends_on:
+      - keycloakdb
+    command: ["start-dev", "--import-realm"]
   pgadmin:
     image: dpage/pgadmin4
     container_name: controller
