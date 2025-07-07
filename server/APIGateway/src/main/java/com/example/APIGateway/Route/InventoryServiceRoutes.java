@@ -28,6 +28,6 @@ public class InventoryServiceRoutes {
                         .filters(f -> f.rewritePath("/api/v2/capacity/(?<eventId>.*)/(?<capacity>.*)", "/api/v1/inventory/event/capacity/${eventId}/${capacity}"))
                         .uri("http://localhost:8080")
                 )
-                .build();
+                .build();       
     }
 }

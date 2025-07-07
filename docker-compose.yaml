@@ -12,6 +12,20 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      
+  keycloakdb:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: navadeep
+    networks:
+      - db_net
+    ports:
+      - "5433:5433"
+    command: ["postgres", "-p", "5433"]
+    volumes:
+      - keycloak_data:/var/lib/postgresql/data
 
   pgadmin:
     image: dpage/pgadmin4
@@ -83,6 +97,7 @@ services:
 
 volumes:
   postgres_data:
+  keycloak_data:
 
 networks:
   db_net:
