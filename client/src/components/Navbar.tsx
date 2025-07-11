@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Logo from "../../src/assets/logo.svg";
 import { Menu, X } from "lucide-react";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 function NavLinks(props: any) {
     const { display } = props;
@@ -16,13 +16,15 @@ function NavLinks(props: any) {
         <ul
             className={`gap-x-6 gap-y-2 ${display} text-2xl font-medium px-20 text-textBlue basis-full`}
         >
-            <li
-                className={`hover:text-black hover:cursor-pointer duration-150 ${activeIcon(
-                    "/"
-                )}`}
-            >
-                Events
-            </li>
+            <Link to={"/"}>
+                <li
+                    className={`hover:text-black hover:cursor-pointer duration-150 ${activeIcon(
+                        "/"
+                    )}`}
+                >
+                    Home
+                </li>
+            </Link>
             <li className="hover:text-black hover:cursor-pointer duration-150">
                 Bookings
             </li>
