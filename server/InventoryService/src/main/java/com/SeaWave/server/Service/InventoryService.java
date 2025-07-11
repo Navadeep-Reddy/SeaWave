@@ -38,7 +38,7 @@ public class InventoryService {
         return events.stream()
                 .map(event -> EventInventoryResponse
                         .builder().event(event.getName())
-                .capacity(event.getLeftCapacity())
+                .capacity(event.getLeftCapacity()).eventId(event.getId())
                 .venue(event.getVenue()).build())
                 .collect(Collectors.toList());
     }
