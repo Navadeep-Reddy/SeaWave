@@ -4,10 +4,20 @@ import { useParams } from "react-router-dom";
 import { getEventById } from "@/api/events";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
+import { bookEvent } from "@/api/book";
 export default function BookingPage() {
     const [event, setEvent] = useState<EventInventoryResponse>();
     const [ticketQuantity, setTicketQuantity] = useState(1);
-    const { eventId } = useParams();
+    const { eventId, userId } = useParams();
+
+    const submitBooking = async () => {
+        try {
+            if (userId && event && ticketQuantity)
+                await bookEvent(userId, event?.eventId, ticketQuantity);
+        } catch {
+            console.log("Failed to book");
+        }
+    };
 
     useEffect(() => {
         const fetchEvent = async () => {
@@ -100,7 +110,10 @@ export default function BookingPage() {
                         </div>
                     </div>
                 </div>
-                <Button className="px-10 py-6 mt-8 h-10 w-40 rounded-2xl bg-textBlue font-semibold text-lg text-offBlue hover:bg-weirdBlue hover:text-textBlue active:bg-greenBlue duration-200">
+                <Button
+                    onClick={() => submitBooking()}
+                    className="px-10 py-6 mt-8 h-10 w-40 rounded-2xl bg-textBlue font-semibold text-lg text-offBlue hover:bg-weirdBlue hover:text-textBlue active:bg-greenBlue duration-200"
+                >
                     Confirm Booking
                 </Button>
             </div>
