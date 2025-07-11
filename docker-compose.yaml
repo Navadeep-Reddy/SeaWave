@@ -30,18 +30,20 @@ services:
   keycloak:
     image: keycloak/keycloak:nightly
     environment:
-      DB_VENDOR: POSTGRES
-      DB_PASSWORD: root
-      DB_USERNAME: navadeep
-      DB_ADDR: keycloakdb
-      DB_PORT: 5433
-      DB_DATABASE: keycloak
+      KC_DB: postgres
+      KC_DB_URL_HOST: keycloakdb
+      KC_DB_URL_PORT: 5433
+      KC_DB_URL_DATABASE: keycloak
+      KC_DB_USERNAME: navadeep
+      KC_DB_PASSWORD: root
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
     ports:
       - "8091:8080"
     depends_on:
       - keycloakdb
+    networks:
+      - db_net
     command: ["start-dev", "--import-realm"]
   pgadmin:
     image: dpage/pgadmin4
@@ -53,6 +55,8 @@ services:
       - "8000:80"
     networks:
       - db_net
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
     depends_on:
       - postgres
 
@@ -114,6 +118,7 @@ services:
 volumes:
   postgres_data:
   keycloak_data:
+  pgadmin_data: 
 
 networks:
   db_net:
