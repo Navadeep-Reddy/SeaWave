@@ -43,23 +43,28 @@ export default function Hero() {
                 />
             </svg>
 
-            <h1 className="md:text-6xl text-4xl font-bold text-textBlue text-center px-2 z-10">
+            <h1 className="md:text-6xl text-4xl font-bold text-textBlue text-center px-2 relative z-10">
                 SeaWave: Effortless Ticketing
             </h1>
-            <p className="text-gray-500 text-lg md:text-xl text-center md:max-w-2xl px-2 my-4 md:my-6 z-10">
+            <p className="text-gray-500 text-lg md:text-xl text-center md:max-w-2xl px-2 my-4 md:my-6 relative z-10">
                 Navigate a world of live events with our intuitive and powerful
                 booking platform. Seawave ensures a smooth journey from
                 discovery to the front row, connecting you to the best in
                 entertainment and culture.
             </p>
 
-            <Link to="events" smooth={true} duration={1000}>
-                <Button className="bg-textBlue text-offBlue rounded-full p-6 my-2 text-lg md:p-8 md:my-4 md:text-xl font-bold hover:text-textBlue hover:cursor-pointer hover:bg-weirdBlue z-10">
+            <Link
+                to="events"
+                smooth={true}
+                duration={1000}
+                className="relative z-10"
+            >
+                <Button className="bg-textBlue text-offBlue rounded-full p-6 my-2 text-lg md:p-8 md:my-4 md:text-xl font-bold hover:text-textBlue hover:cursor-pointer hover:bg-weirdBlue relative">
                     Discover Live Events
                 </Button>
             </Link>
 
-            <div className="absolute bottom-0 left-0 w-full">
+            <div className="absolute bottom-0 left-0 w-full z-0">
                 <svg
                     viewBox="0 0 1440 200"
                     xmlns="http://www.w3.org/2000/svg"
