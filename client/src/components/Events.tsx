@@ -5,15 +5,32 @@ import { getAllEvents } from "@/api/events";
 
 export default function events() {
     const [events, setEvents] = useState<EventInventoryResponse[]>();
+    const [filterEvents, setFilterEvents] =
+        useState<EventInventoryResponse[]>();
+    const [search, setSearch] = useState<string | undefined>();
+
     useEffect(() => {
         const fetchEvents = async () => {
             const data = await getAllEvents();
-            if (data) setEvents(data);
+            if (data) {
+                setEvents(data);
+                setFilterEvents(data);
+            }
+
             console.log(data);
         };
 
         fetchEvents();
     }, []);
+
+    function filterItems(keyword: string) {
+        const filteredArray = events?.filter((event) =>
+            event.event.toLowerCase().includes(keyword.toLowerCase())
+        );
+
+        setFilterEvents(filteredArray);
+    }
+
     return (
         <div className="events-display w-5/6 mx-auto " id="events">
             <h1 className="title text-textBlue font-bold text-3xl md:text-6xl">
@@ -22,10 +39,15 @@ export default function events() {
 
             <input
                 placeholder="Search Event"
-                className="h-12 w-72 border-2 border-black/70 focus:outline-1 focus:outline-textBlue rounded-md p-4 my-6 md:mt-20 "
+                className="h-12 w-72 border-2 border-black/70 focus:outline-1 focus:outline-textBlue rounded-md p-4 my-6 md:mt-20"
+                value={search}
+                onChange={(event) => {
+                    filterItems(event.target.value)
+                    setSearch(event.target.value);
+                }}
             />
             <div className="events-box overflow-y-auto h-[600px]">
-                {events?.map((event, key) => {
+                {filterEvents?.map((event, key) => {
                     return (
                         <EventBox
                             name={event.event}
