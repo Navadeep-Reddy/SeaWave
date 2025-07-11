@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Button } from "./ui/button";
 
 export default function EventBox(props: any) {
-    const { name, capacity, venue } = props;
+    const { name, capacity, venue, id } = props;
     return (
         <div className="w-full h-20 md:h-20 rounded-md  bg-offBlue mx-auto md:mx-0 mb-4 md:mb-8  p-2 flex justify-between items-center ">
             <div className="details m-1 basis-2/3 min-w-0">
@@ -23,7 +23,7 @@ export default function EventBox(props: any) {
                     </div>
                 </div>
             </div>
-            <Link to={`/booking/1/${"1"}`}>
+            <Link to={`/booking/1/${id}`}>
                 <Button className="bg-textBlue text-white font-semibold h-16 w-16 hover:bg-weirdBlue hover:text-textBlue hover:cursor-pointer">
                     Register
                 </Button>

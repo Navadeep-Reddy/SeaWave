@@ -53,6 +53,7 @@ export default function events() {
                             name={event.event}
                             capacity={event.capacity}
                             venue={event.venue.name}
+                            id={event.eventId}
                             key={key}
                         />
                     );
