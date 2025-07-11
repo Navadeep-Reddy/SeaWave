@@ -100,7 +100,7 @@ export default function BookingPage() {
                         </div>
                     </div>
                 </div>
-                <Button className="px-10 py-6 mt-8 h-10 w-40  rounded-2xl bg-textBlue font-semibold text-lg text-offBlue hover:bg-greenBlue">
+                <Button className="px-10 py-6 mt-8 h-10 w-40 rounded-2xl bg-textBlue font-semibold text-lg text-offBlue hover:bg-weirdBlue hover:text-textBlue active:bg-greenBlue duration-200">
                     Confirm Booking
                 </Button>
             </div>
