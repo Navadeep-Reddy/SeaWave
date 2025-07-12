@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: postgres
+    image: postgres:15-alpine
     container_name: database
     environment:
       POSTGRES_PASSWORD: "12345"
@@ -12,9 +12,16 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U navadeep -d SeaWave"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
       
   keycloakdb:
-    image: postgres
+    image: postgres:15-alpine
+    container_name: keycloak_database
     environment:
       POSTGRES_PASSWORD: root
       POSTGRES_DB: keycloak
@@ -22,35 +29,58 @@ services:
     networks:
       - db_net
     ports:
-      - "5433:5433"
-    command: ["postgres", "-p", "5433"]
+      - "5433:5432"
     volumes:
       - keycloak_data:/var/lib/postgresql/data
-
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U navadeep -d keycloak"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      
   keycloak:
-    image: keycloak/keycloak:nightly
+    image: quay.io/keycloak/keycloak:24.0
+    container_name: keycloak_server
     environment:
       KC_DB: postgres
-      KC_DB_URL_HOST: keycloakdb
-      KC_DB_URL_PORT: 5433
-      KC_DB_URL_DATABASE: keycloak
+      KC_DB_URL: jdbc:postgresql://keycloakdb:5432/keycloak
       KC_DB_USERNAME: navadeep
       KC_DB_PASSWORD: root
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_HEALTH_ENABLED: true
+      KC_METRICS_ENABLED: true
+      KC_HOSTNAME_STRICT: false
+      KC_HOSTNAME_STRICT_HTTPS: false
+      KC_HTTP_ENABLED: true
+      KC_LOG_LEVEL: INFO
     ports:
       - "8091:8080"
+      - "9000:9000"  # Health and metrics port
     depends_on:
-      - keycloakdb
+      keycloakdb:
+        condition: service_healthy
     networks:
       - db_net
+    volumes:
+      - keycloak_app_data:/opt/keycloak/data
+    restart: unless-stopped
     command: ["start-dev", "--import-realm"]
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/health/ready || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    
   pgadmin:
-    image: dpage/pgadmin4
-    container_name: controller
+    image: dpage/pgadmin4:8
+    container_name: pgadmin_controller
     environment:
       PGADMIN_DEFAULT_EMAIL: navadeep@gmail.com
       PGADMIN_DEFAULT_PASSWORD: "2005"
+      PGADMIN_CONFIG_SERVER_MODE: "False"
     ports:
       - "8000:80"
     networks:
@@ -58,67 +88,106 @@ services:
     volumes:
       - pgadmin_data:/var/lib/pgadmin
     depends_on:
-      - postgres
-
-  kafkaKeeper:
-    image: confluentinc/cp-zookeeper:6.2.0  # Changed from 'zookeeper'
-    container_name: kafkaZookeeper
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.4.0
+    container_name: kafka_zookeeper
     ports:
       - "2181:2181"
     environment:
-      ZOOKEEPER_CLIENT_PORT: 2181  # Removed quotes
-      ZOOKEEPER_TICK_TIME: 2000    # Changed from "3000" to 2000
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_SYNC_LIMIT: 2
+    volumes:
+      - zookeeper_data:/var/lib/zookeeper/data
+      - zookeeper_logs:/var/lib/zookeeper/log
+    restart: unless-stopped
     healthcheck:
       test: ["CMD", "nc", "-z", "localhost", "2181"]
       interval: 10s
       timeout: 5s
       retries: 5
-
+      
   kafka-broker:
-    image: confluentinc/cp-kafka:6.2.0
-    container_name: kafka-kafka-broker
+    image: confluentinc/cp-kafka:7.4.0
+    container_name: kafka_broker
     ports:
       - "9092:9092"
       - "29092:29092"
     depends_on:
-      kafkaKeeper:
+      zookeeper:
         condition: service_healthy
-        
     environment:
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: 'kafkaKeeper:2181'
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-broker:29092,PLAINTEXT_HOST://localhost:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_JMX_PORT: 9101
+      KAFKA_JMX_HOSTNAME: localhost
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+      
   kafka-ui:
-    container_name: kafka-ui
+    container_name: kafka_ui
     image: provectuslabs/kafka-ui:latest
     ports:
       - "8084:8080"
     depends_on:
-      - kafka-broker
-    environment:  # Added missing environment configuration
+      kafka-broker:
+        condition: service_healthy
+    environment:
       KAFKA_CLUSTERS_0_NAME: local
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka-broker:29092
-
+      KAFKA_CLUSTERS_0_SCHEMAREGISTRY: http://kafka-schema-registry:8081
+    restart: unless-stopped
+    
   kafka-schema-registry:
-    image: confluentinc/cp-schema-registry
+    image: confluentinc/cp-schema-registry:7.4.0
     hostname: kafka-schema-registry
-    container_name: kafka-schema-registry
+    container_name: kafka_schema_registry
     depends_on:
-      - kafka-broker
+      kafka-broker:
+        condition: service_healthy
     ports:
       - "8083:8081"
     environment:
       SCHEMA_REGISTRY_HOST_NAME: kafka-schema-registry
       SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'kafka-broker:29092'
-      SCHEMA_REGISTRY_LISTENERS: http://kafka-schema-registry:8081
+      SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081
+    volumes:
+      - schema_registry_data:/var/lib/schema-registry
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/subjects"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
 
 volumes:
   postgres_data:
   keycloak_data:
-  pgadmin_data: 
-
+  keycloak_app_data:
+  pgadmin_data:
+  zookeeper_data:
+  zookeeper_logs:
+  kafka_data:
+  schema_registry_data:
+  
 networks:
   db_net:
+    driver: bridge
