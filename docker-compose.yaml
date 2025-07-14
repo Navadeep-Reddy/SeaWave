@@ -43,18 +43,18 @@ services:
     image: quay.io/keycloak/keycloak:24.0
     container_name: keycloak_server
     environment:
-      KC_DB: postgres
-      KC_DB_URL: jdbc:postgresql://keycloakdb:5432/keycloak
-      KC_DB_USERNAME: navadeep
-      KC_DB_PASSWORD: root
+      KEYCLOAK_DB: postgres
+      KEYCLOAK_DB_URL: jdbc:postgresql://keycloakdb:5432/keycloak
+      KEYCLOAK_DB_USERNAME: navadeep
+      KEYCLOAK_DB_PASSWORD: root
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
-      KC_HEALTH_ENABLED: true
-      KC_METRICS_ENABLED: true
-      KC_HOSTNAME_STRICT: false
-      KC_HOSTNAME_STRICT_HTTPS: false
-      KC_HTTP_ENABLED: true
-      KC_LOG_LEVEL: INFO
+      KEYCLOAK_HEALTH_ENABLED: true
+      KEYCLOAK_METRICS_ENABLED: true
+      KEYCLOAK_HOSTNAME_STRICT: false
+      KEYCLOAK_HOSTNAME_STRICT_HTTPS: false
+      KEYCLOAK_HTTP_ENABLED: true
+      KEYCLOAK_LOG_LEVEL: INFO
     ports:
       - "8091:8080"
       - "9000:9000"  # Health and metrics port
