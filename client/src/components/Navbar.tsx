@@ -28,12 +28,6 @@ function NavLinks(props: any) {
             <li className="hover:text-black hover:cursor-pointer duration-150">
                 Bookings
             </li>
-            <li className="hover:text-black hover:cursor-pointer duration-150">
-                Customers
-            </li>
-            <li className="hover:text-black hover:cursor-pointer duration-150 mb-5">
-                Settings
-            </li>
         </ul>
     );
 }
