@@ -20,7 +20,7 @@ export default function BookingPage() {
             setIsLoading(true);
             if (userId && event && ticketQuantity) {
                 console.log("Booking Initiated");
-                const response = await bookEvent(
+                await bookEvent(
                     userId,
                     event?.eventId,
                     ticketQuantity,

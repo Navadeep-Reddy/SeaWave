@@ -15,11 +15,17 @@ function App() {
 }
 const SecuredContent = () => {
     const { keycloak } = useKeycloak();
+
     const isLoggedIn = keycloak?.authenticated;
     useEffect(() => {
+
+
         if (isLoggedIn === false) keycloak?.login();
+        //else loadProfile();
     }, [isLoggedIn, keycloak]);
+
     if (!isLoggedIn) return <div>Not logged in</div>;
+
     return (
         <BrowserRouter>
             <Navbar />
