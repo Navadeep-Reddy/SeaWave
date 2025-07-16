@@ -1,6 +1,6 @@
 CREATE TABLE Customer(
-    id BIGSERIAL PRIMARY KEY,
+    id varchar PRIMARY KEY,
     name varchar NOT NULL,
     email varchar NOT NULL,
-    address varchar NOT NULL
+    created_at timestamp NOT NULL
 );

@@ -18,7 +18,6 @@ export default function HomePage() {
         loadProfile();
     }, []);
 
-    console.log(keycloak.profile);
     return (
         <div>
             <Hero />

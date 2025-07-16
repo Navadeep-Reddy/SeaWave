@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BookingRequest {
-    private Long userId;
+    private String userId;
     private Long ticketId;
     private int ticketQuantity;
     private Long eventId;

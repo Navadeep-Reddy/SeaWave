@@ -32,7 +32,7 @@ public class Order {
     private LocalDateTime placedAt;
 
     @Column(name = "customer_id")
-    private Long customerId;
+    private String customerId;
 
     @Column(name = "event_id")
     private Long eventId;
