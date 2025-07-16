@@ -1,7 +1,8 @@
 export async function bookEvent(
     userId: string,
     eventId: string,
-    ticketQty: number
+    ticketQty: number,
+    keycloak: any
 ) {
     const postObject = {
         userId: userId,
@@ -11,16 +12,14 @@ export async function bookEvent(
     };
 
     try {
-        const response = await fetch(
-            "http://localhost:8081/api/v1/booking/event",
-            {
-                method: "POST",
-                body: JSON.stringify(postObject),
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            }
-        );
+        const response = await fetch("http://localhost:8090/api/v2/booking", {
+            method: "POST",
+            body: JSON.stringify(postObject),
+            headers: {
+                "Content-Type": "application/json",
+                ["Authorization"]: `Bearer ${keycloak.token}`,
+            },
+        });
 
         if (!response.ok) {
             throw new Error(`Failed while Booking with ${postObject}`);

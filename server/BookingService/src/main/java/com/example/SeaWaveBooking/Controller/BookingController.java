@@ -5,7 +5,6 @@ import com.example.SeaWaveBooking.Response.BookingResponse;
 import com.example.SeaWaveBooking.Service.BookingService;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/api/v1")
 public class BookingController {
