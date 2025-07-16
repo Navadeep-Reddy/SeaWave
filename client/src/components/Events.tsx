@@ -2,16 +2,18 @@ import { useEffect, useState } from "react";
 import EventBox from "./EventBox";
 import { EventInventoryResponse } from "@/types/eventTypes";
 import { getAllEvents } from "@/api/events";
+import { useKeycloak } from "@react-keycloak/web";
 
 export default function events() {
     const [events, setEvents] = useState<EventInventoryResponse[]>();
     const [filterEvents, setFilterEvents] =
         useState<EventInventoryResponse[]>();
     const [search, setSearch] = useState<string | undefined>();
+    const { keycloak } = useKeycloak();
 
     useEffect(() => {
         const fetchEvents = async () => {
-            const data = await getAllEvents();
+            const data = await getAllEvents(keycloak);
             if (data) {
                 setEvents(data);
                 setFilterEvents(data);
@@ -42,7 +44,7 @@ export default function events() {
                 className="h-12 w-72 border-2 border-black/70 focus:outline-1 focus:outline-textBlue rounded-md p-4 my-6 md:mt-20"
                 value={search}
                 onChange={(event) => {
-                    filterItems(event.target.value)
+                    filterItems(event.target.value);
                     setSearch(event.target.value);
                 }}
             />
