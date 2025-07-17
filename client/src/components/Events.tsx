@@ -18,8 +18,6 @@ export default function events() {
                 setEvents(data);
                 setFilterEvents(data);
             }
-
-            console.log(data);
         };
 
         fetchEvents();

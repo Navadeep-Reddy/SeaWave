@@ -6,8 +6,6 @@ services:
       POSTGRES_PASSWORD: "12345"
       POSTGRES_USER: navadeep
       POSTGRES_DB: SeaWave
-    networks:
-      - db_net
     ports:
       - "5432:5432"
     volumes:
@@ -19,6 +17,61 @@ services:
       timeout: 5s
       retries: 5
       
+  inventory-db:
+    image: postgres:15-alpine
+    container_name: inventory-db-container
+    environment:
+      POSTGRES_PASSWORD: "12345"
+      POSTGRES_USER: navadeep
+      POSTGRES_DB: SeaWaveInventory
+    volumes:
+      - inventory_data:/var/lib/postgresql/data
+    ports:
+      - "5434:5432"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U navadeep -d SeaWaveInventory"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      
+  order-db:
+    image: postgres:15-alpine
+    container_name: order-db-container
+    environment:
+      POSTGRES_PASSWORD: "12345"
+      POSTGRES_USER: navadeep
+      POSTGRES_DB: SeaWaveOrder
+    volumes:
+      - order_data:/var/lib/postgresql/data
+    ports:
+      - "5435:5432"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U navadeep -d SeaWaveOrder"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      
+  user-db:
+    image: postgres:15-alpine
+    container_name: user-db-container
+    environment:
+      POSTGRES_PASSWORD: "12345"
+      POSTGRES_USER: navadeep
+      POSTGRES_DB: SeaWaveUser
+    volumes:
+      - user_data:/var/lib/postgresql/data
+    ports:
+      - "5436:5432"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U navadeep -d SeaWaveUser"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    
+      
   keycloakdb:
     image: postgres:15-alpine
     container_name: keycloak_database
@@ -26,8 +79,6 @@ services:
       POSTGRES_PASSWORD: root
       POSTGRES_DB: keycloak
       POSTGRES_USER: navadeep
-    networks:
-      - db_net
     ports:
       - "5433:5432"
     volumes:
@@ -61,8 +112,6 @@ services:
     depends_on:
       keycloakdb:
         condition: service_healthy
-    networks:
-      - db_net
     volumes:
       - keycloak_app_data:/opt/keycloak/data
     restart: unless-stopped
@@ -83,8 +132,6 @@ services:
       PGADMIN_CONFIG_SERVER_MODE: "False"
     ports:
       - "8000:80"
-    networks:
-      - db_net
     volumes:
       - pgadmin_data:/var/lib/pgadmin
     depends_on:
@@ -187,7 +234,9 @@ volumes:
   zookeeper_logs:
   kafka_data:
   schema_registry_data:
+  user_data:
+  order_data:
+  inventory_data:
   
-networks:
-  db_net:
-    driver: bridge
+  
+
