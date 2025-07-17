@@ -10,7 +10,5 @@ CREATE TABLE event (
     total_capacity int NOT NULL,
     left_capacity int NOT NULL,
     name varchar NOT NULL ,
-    address varchar NOT NULL,
-    venue_id BIGINT,
-    CONSTRAINT fk_event_venue FOREIGN KEY (venue_id) REFERENCES venue(id) ON DELETE CASCADE
+    venue_id BIGINT
 );

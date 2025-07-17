@@ -26,7 +26,6 @@ public class Event {
 
     private String name;
 
-    private String address;
 
     @ManyToOne
     @JoinColumn(name = "venue_id")
