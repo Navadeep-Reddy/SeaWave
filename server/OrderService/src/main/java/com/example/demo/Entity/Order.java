@@ -18,23 +18,38 @@ import java.time.LocalDateTime;
 @Table(name = "\"order\"")
 public class Order {
     @Id
+    @Column(name = "order_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "total")
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+
+    @Column(name = "user_id")
+    private String userId;
+
+    @Column(name = "user_name")
+    private String userName;
+
+    @Column(name = "user_email")
+    private String userEmail;
+
+    @Column(name = "total_price")
     private BigDecimal totalPrice;
 
-    @Column(name = "quantity")
-    private Long ticketCount;
-
-    @CreationTimestamp
-    @Column(name = "placed_at", updatable = false, nullable = false)
-    private LocalDateTime placedAt;
-
-    @Column(name = "customer_id")
-    private String customerId;
+    @Column(name = "ticket_count")
+    private int ticketCount;
 
     @Column(name = "event_id")
     private Long eventId;
+
+    @Column(name = "event_name")
+    private String eventName;
+
+    @Column(name = "venue_id")
+    private Long venueId;
+
+    @Column(name = "venue_name")
+    private String venueName;
 
 }

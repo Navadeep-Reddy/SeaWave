@@ -36,10 +36,15 @@ public class OrderService {
 
     private Order createOrder(BookingEvent bookingEvent){
         return Order.builder()
-                .customerId(bookingEvent.getUserId())
-                .eventId(bookingEvent.getEventId())
+                .userId(bookingEvent.getUserId())
+                .userName(bookingEvent.getUserName())
+                .userEmail(bookingEvent.getUserEmail())
                 .totalPrice(bookingEvent.getTotalPrice())
-                .ticketCount((long) bookingEvent.getTicketCount())
+                .ticketCount(bookingEvent.getTicketCount())
+                .eventId(bookingEvent.getEventId())
+                .eventName(bookingEvent.getEventName())
+                .venueId(bookingEvent.getVenueId())
+                .venueName(bookingEvent.getVenueName())
                 .build();
     }
 }
