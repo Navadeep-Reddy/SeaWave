@@ -1,40 +1,46 @@
 package com.example.SeaWaveBooking.Service;
 
 import com.example.SeaWaveBooking.Client.InventoryServiceClient;
-import com.example.SeaWaveBooking.Entity.Customer;
+import com.example.SeaWaveBooking.Client.UserServiceClient;
 import com.example.SeaWaveBooking.Events.BookingEvent;
-import com.example.SeaWaveBooking.Repository.CustomerRepository;
 import com.example.SeaWaveBooking.Request.BookingRequest;
+import com.example.SeaWaveBooking.Response.BookingCustomerResponse;
 import com.example.SeaWaveBooking.Response.BookingResponse;
 import com.example.SeaWaveBooking.Response.InventoryResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.common.errors.ResourceNotFoundException;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 @Service
 @Slf4j
 public class BookingService {
-    private final CustomerRepository customerRepository;
     private final InventoryServiceClient inventoryClient;
+    private final UserServiceClient userClient;
 
     //we write the booking event into a topic
     private final KafkaTemplate<String, BookingEvent> kafkaTemplate;
 
-    public BookingService(CustomerRepository repo, InventoryServiceClient client, KafkaTemplate<String, BookingEvent> kafkaTemplate){
-        this.customerRepository = repo;
+    public BookingService(UserServiceClient userClient, InventoryServiceClient client, KafkaTemplate<String, BookingEvent> kafkaTemplate){
         this.inventoryClient = client;
         this.kafkaTemplate = kafkaTemplate;
+        this.userClient = userClient;
     }
 
     public BookingResponse createBooking(BookingRequest request) {
-        //check if user exists
-        Customer customer = customerRepository.findById(request.getUserId()).orElse(null);
+        //Synchronously get customer details from UserService
+        Optional<BookingCustomerResponse> optionalCustomer = userClient.getCustomerBookingDetails(request.getUserId());
 
-        if (customer == null){
-            throw new RuntimeException("Customer not found");
+        if (optionalCustomer.isEmpty()){
+            throw new ResourceNotFoundException("Customer with id " + request.getUserId() + " not found");
         }
+
+        //found customer
+        BookingCustomerResponse customer = optionalCustomer.get();
+
 
         //check if capacity / tickets is available
         InventoryResponse inventoryResponse = inventoryClient.getInventory(request.getEventId());
@@ -43,8 +49,7 @@ public class BookingService {
         }
 
         //this means all conditions have been met,and we can now book and return the booking response
-        String logData = "The Inventory Response is:" + inventoryResponse;
-        log.info(logData);
+        log.info("The Inventory Response is: {}", inventoryResponse);
 
         //making the booking event
         final BookingEvent event = createBookingEvent(customer, inventoryResponse, request);
@@ -62,10 +67,15 @@ public class BookingService {
                 .build();
     }
 
-    private BookingEvent createBookingEvent(Customer customer, InventoryResponse response, BookingRequest request){
+    private BookingEvent createBookingEvent(BookingCustomerResponse customer, InventoryResponse response, BookingRequest request){
         return BookingEvent.builder()
                 .userId(customer.getId())
+                .userEmail(customer.getEmail())
+                .userName(customer.getName())
                 .eventId(response.getEventId())
+                .eventName(response.getEvent())
+                .venueId(response.getVenue().getId())
+                .venueName(response.getVenue().getName())
                 .ticketCount(request.getTicketQuantity())
                 .totalPrice(BigDecimal.valueOf((long) request.getTicketQuantity() * request.getTicketQuantity()))
                 .build();
