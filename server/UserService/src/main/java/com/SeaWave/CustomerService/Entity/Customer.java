@@ -38,4 +38,13 @@ public class Customer {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @Column(name = "email_verified")
+    private boolean emailVerified;
+
+    @Column(name = "first_name")
+    private String firstName;
+
+    @Column(name = "last_name")
+    private String lastName;
+
 }
