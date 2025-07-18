@@ -1,14 +1,16 @@
+import keycloak from "@/auth/keycloak";
 import { customerType } from "@/types/customerType";
 
 export default async function verifyCustomer(
     customer: customerType
 ): Promise<any> {
     try {
-        const response = await fetch("http://localhost:8081/api/v1/customer", {
+        const response = await fetch("http://localhost:8090/api/v2/customer", {
             method: "POST",
             body: JSON.stringify(customer),
             headers: {
                 "Content-Type": "application/json",
+                Authorization: `Bearer ${keycloak.token}`,
             },
         });
 
