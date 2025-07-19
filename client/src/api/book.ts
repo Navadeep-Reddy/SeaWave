@@ -6,9 +6,9 @@ export async function bookEvent(
 ) {
     const postObject = {
         userId: userId,
-        ticketId: eventId,
+        ticketId: "1",
         ticketQuantity: ticketQty,
-        eventId: "1",
+        eventId: eventId,
     };
 
     try {

@@ -27,9 +27,17 @@ function NavLinks(props: any) {
                     Home
                 </li>
             </Link>
-            <li className="hover:text-black hover:cursor-pointer duration-150">
-                Bookings
-            </li>
+
+            <Link to="/tickets">
+                <li
+                    className={`hover:text-black hover:cursor-pointer duration-150 ${activeIcon(
+                        "/tickets"
+                    )}`}
+                >
+                    Bookings
+                </li>
+            </Link>
+
             <li
                 onClick={() => {
                     keycloak.logout();

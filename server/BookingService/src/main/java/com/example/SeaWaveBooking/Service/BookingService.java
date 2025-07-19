@@ -3,10 +3,11 @@ package com.example.SeaWaveBooking.Service;
 import com.example.SeaWaveBooking.Client.InventoryServiceClient;
 import com.example.SeaWaveBooking.Client.UserServiceClient;
 import com.example.SeaWaveBooking.Events.BookingEvent;
+import com.example.SeaWaveBooking.Request.BookingInventoryRequest;
 import com.example.SeaWaveBooking.Request.BookingRequest;
 import com.example.SeaWaveBooking.Response.BookingCustomerResponse;
 import com.example.SeaWaveBooking.Response.BookingResponse;
-import com.example.SeaWaveBooking.Response.InventoryResponse;
+import com.example.SeaWaveBooking.Response.BookingInventoryResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.errors.ResourceNotFoundException;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -42,17 +43,17 @@ public class BookingService {
         BookingCustomerResponse customer = optionalCustomer.get();
 
 
-        //check if capacity / tickets is available
-        InventoryResponse inventoryResponse = inventoryClient.getInventory(request.getEventId());
-        if (inventoryResponse.getCapacity() < request.getTicketQuantity()){
-            throw new RuntimeException("Insufficient tickets present");
-        }
+        //updating capacity to bookEvent
+        BookingInventoryRequest bookingInventoryRequest = BookingInventoryRequest.builder().eventID(request.getEventId()).bookingCapacity(request.getTicketQuantity()).build();
+
+        BookingInventoryResponse bookingInventoryResponse = inventoryClient.bookInventoryCapacity(bookingInventoryRequest);
+
 
         //this means all conditions have been met,and we can now book and return the booking response
-        log.info("The Inventory Response is: {}", inventoryResponse);
+        log.info("The Inventory Response is: {}", bookingInventoryResponse);
 
         //making the booking event
-        final BookingEvent event = createBookingEvent(customer, inventoryResponse, request);
+        final BookingEvent event = createBookingEvent(customer, bookingInventoryResponse, request);
 
         //pushing this event to the broker
         //(name of topic, value)
@@ -67,7 +68,7 @@ public class BookingService {
                 .build();
     }
 
-    private BookingEvent createBookingEvent(BookingCustomerResponse customer, InventoryResponse response, BookingRequest request){
+    private BookingEvent createBookingEvent(BookingCustomerResponse customer, BookingInventoryResponse response, BookingRequest request){
         return BookingEvent.builder()
                 .userId(customer.getId())
                 .userEmail(customer.getEmail())

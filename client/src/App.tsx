@@ -5,6 +5,7 @@ import BookingPage from "./pages/BookingPage";
 import { useEffect } from "react";
 import keycloak from "./auth/keycloak";
 import { ReactKeycloakProvider, useKeycloak } from "@react-keycloak/web";
+import BookedPage from "./pages/BookedPage";
 
 function App() {
     return (
@@ -18,13 +19,18 @@ const SecuredContent = () => {
 
     const isLoggedIn = keycloak?.authenticated;
     useEffect(() => {
-
-
         if (isLoggedIn === false) keycloak?.login();
         //else loadProfile();
     }, [isLoggedIn, keycloak]);
 
-    if (!isLoggedIn) return <div>Not logged in</div>;
+    if (!isLoggedIn)
+        return (
+            <div className="flex items-center h-screen w-full justify-center bg-offBlue">
+                <h1 className="text-6xl font-semibold text-black/80">
+                    Not logged in
+                </h1>
+            </div>
+        );
 
     return (
         <BrowserRouter>
@@ -35,6 +41,7 @@ const SecuredContent = () => {
                     path="/booking/:userId/:eventId"
                     element={<BookingPage />}
                 />
+                <Route path="/tickets" element={<BookedPage />} />
             </Routes>
         </BrowserRouter>
     );

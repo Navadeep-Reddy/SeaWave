@@ -1,6 +1,8 @@
 package com.SeaWave.server.Controller;
 
 import com.SeaWave.server.Entity.Event;
+import com.SeaWave.server.Request.BookingInventoryRequest;
+import com.SeaWave.server.Response.BookingInventoryResponse;
 import com.SeaWave.server.Response.EventInventoryResponse;
 import com.SeaWave.server.Response.VenueLocationResponse;
 import com.SeaWave.server.Service.InventoryService;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/inventory")
@@ -40,5 +43,13 @@ public class InventoryController {
     @PutMapping("/event/capacity/{eventID}/{capacity}")
     public ResponseEntity<Void> updateEventCapacity(@PathVariable Long eventID,@PathVariable int capacity){
         return inventoryService.updateCapacity(eventID, capacity);
+    }
+
+    //update event capacity before BookingEvent is placed into topic
+    @PostMapping(consumes = "application/json", produces = "application/json", path="/book")
+    public ResponseEntity<BookingInventoryResponse> bookEventCapacity(@RequestBody BookingInventoryRequest request){
+        Optional<BookingInventoryResponse> optionalResponse = inventoryService.bookEventCapacity(request);
+
+        return optionalResponse.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.badRequest().build());
     }
 }

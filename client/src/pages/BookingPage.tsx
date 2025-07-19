@@ -79,11 +79,11 @@ export default function BookingPage() {
             </div>
 
             <div className="w-full lg:w-1/2 flex flex-col items-center lg:justify-start ">
-                <div className="event-details bg-offBlue/80 mt-10 lg:mt-0 w-full h-40 p-4 rounded-t-2xl flex flex-col items-center">
-                    <h1 className="text-textBlue/90 font-bold text-2xl">
+                <div className="event-details bg-offBlue/80 mt-10 lg:mt-0 w-full min-h-40 p-4 rounded-t-2xl flex flex-col items-center ">
+                    <h1 className="text-textBlue/90 font-bold text-2xl whitespace-nowrap text-ellipsis overflow-hidden w-full text-center">
                         {event?.event}
                     </h1>
-                    <h2 className="text-xl font-semibold text-black/70">
+                    <h2 className="text-xl font-semibold text-black/70 whitespace-nowrap text-ellipsis overflow-hidden w-full my-2 text-center">
                         {event?.venue.name}
                     </h2>
                     <div className="my-4 flex flex-col items-center">
@@ -97,7 +97,7 @@ export default function BookingPage() {
                         </div>
                     </div>
                 </div>
-                <div className="ticket-details bg-offBlue/80 mt-5 w-full h-40 p-4 rounded-b-2xl flex flex-col items-center">
+                <div className="ticket-details bg-offBlue/80 mt-5 w-full min-h-40 p-4 rounded-b-2xl flex flex-col items-center">
                     <h1 className="text-textBlue/90 font-bold text-2xl">
                         Select Tickets
                     </h1>

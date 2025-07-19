@@ -11,6 +11,7 @@ export default function HomePage() {
         const loadProfile = async () => {
             try {
                 await keycloak.loadUserProfile();
+                console.log(keycloak.profile);
             } catch (error) {
                 console.log(error);
             }

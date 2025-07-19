@@ -14,7 +14,12 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 public class BookingEvent {
     private String userId;
+    private String userName;
+    private String userEmail;
     private BigDecimal totalPrice;
     private int ticketCount;
     private Long eventId;
+    private String eventName;
+    private Long venueId;
+    private String venueName;
 }

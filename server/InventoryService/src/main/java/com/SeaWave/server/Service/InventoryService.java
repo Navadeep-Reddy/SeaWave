@@ -4,14 +4,18 @@ import com.SeaWave.server.Entity.Event;
 import com.SeaWave.server.Entity.Venue;
 import com.SeaWave.server.Repository.EventRepository;
 import com.SeaWave.server.Repository.VenueRepository;
+import com.SeaWave.server.Request.BookingInventoryRequest;
+import com.SeaWave.server.Response.BookingInventoryResponse;
 import com.SeaWave.server.Response.EventInventoryResponse;
 import com.SeaWave.server.Response.VenueLocationResponse;
+import com.SeaWave.server.Response.VenueResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -81,5 +85,42 @@ public class InventoryService {
 
         eventRepository.save(event);
         return ResponseEntity.ok().build();
+    }
+
+    public Optional<BookingInventoryResponse> bookEventCapacity(BookingInventoryRequest request) {
+        Optional<Event> optionalEvent = eventRepository.findById(request.getEventID());
+
+        if (optionalEvent.isEmpty()){
+            return Optional.empty();
+        }
+
+        Event event = optionalEvent.get();
+        if (event.getLeftCapacity() >= request.getBookingCapacity()){
+            event.setLeftCapacity(event.getLeftCapacity() - request.getBookingCapacity());
+            eventRepository.save(event);
+            return Optional.ofNullable(convertToBookingDTO(event));
+        }
+
+        return Optional.empty();
+
+    }
+    private VenueResponse convertVenueVenueResponse(Venue venue){
+        return VenueResponse.builder()
+                .id(venue.getId())
+                .name(venue.getName())
+                .address(venue.getAddress())
+                .totalCapacity(venue.getTotalCapacity())
+                .build();
+    }
+
+    private BookingInventoryResponse convertToBookingDTO(Event event){
+        return BookingInventoryResponse.builder()
+                .eventId(event.getId())
+                .capacity(event.getLeftCapacity())
+                .event(event.getName())
+                .venue(convertVenueVenueResponse(event.getVenue()))
+                .ticketPrice(event.getTicketPrice())
+                .build();
+
     }
 }
