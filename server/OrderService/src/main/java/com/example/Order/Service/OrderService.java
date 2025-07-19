@@ -1,6 +1,5 @@
 package com.example.Order.Service;
 
-import com.example.Order.Client.InventoryServiceClient;
 import com.example.Order.Entity.Order;
 import com.example.Order.Repository.OrderRepository;
 import com.example.Order.Response.OrderResponse;
@@ -17,11 +16,9 @@ import java.util.stream.Collectors;
 public class OrderService {
 
     private final OrderRepository orderRepository;
-    private final InventoryServiceClient inventoryServiceClient;
 
-    public OrderService(OrderRepository repo, InventoryServiceClient inventoryServiceClient){
+    public OrderService(OrderRepository repo){
         this.orderRepository = repo;
-        this.inventoryServiceClient = inventoryServiceClient;
     }
 
     @KafkaListener(topics = "booking", groupId = "order-service")
@@ -31,10 +28,6 @@ public class OrderService {
         //save to table
         Order order = createOrder(bookingEvent);
         orderRepository.saveAndFlush(order);
-
-        //Update Inventory of event in InventoryService
-        inventoryServiceClient.updateCapacity(Math.toIntExact(order.getEventId()), Math.toIntExact(order.getTicketCount()));
-        log.info("Inventory has been updated with capacity {}", order.getTicketCount());
 
     }
 
