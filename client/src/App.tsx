@@ -5,7 +5,7 @@ import BookingPage from "./pages/BookingPage";
 import { useEffect } from "react";
 import keycloak from "./auth/keycloak";
 import { ReactKeycloakProvider, useKeycloak } from "@react-keycloak/web";
-import BookedPage from "./pages/BookedPage";
+import OrdersPage from "./pages/OrdersPage";
 
 function App() {
     return (
@@ -41,7 +41,7 @@ const SecuredContent = () => {
                     path="/booking/:userId/:eventId"
                     element={<BookingPage />}
                 />
-                <Route path="/tickets" element={<BookedPage />} />
+                <Route path="/tickets" element={<OrdersPage />} />
             </Routes>
         </BrowserRouter>
     );
