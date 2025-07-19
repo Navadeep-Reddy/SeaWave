@@ -1,170 +1,25 @@
 import { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
-
-interface BookedTicket {
-    userName: string;
-    userEmail: string;
-    totalPrice: number;
-    ticketCount: number;
-    eventName: string;
-    venueName: string;
-}
+import { BookedTicket } from "@/types/orderTypes";
+import getUserOrders from "@/api/order";
+import { useParams } from "react-router-dom";
 
 export default function OrdersPage() {
     const [orders, setOrders] = useState<BookedTicket[]>([]);
     const [filteredOrders, setFilteredOrders] = useState<BookedTicket[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [sortBy, setSortBy] = useState<"date" | "price" | "event">("date");
+    const { userID } = useParams();
 
     useEffect(() => {
-        const mockData: BookedTicket[] = [
-            {
-                userName: "navadeep",
-                userEmail: "vnavadeepreddysatti@gmail.com",
-                totalPrice: 4.0,
-                ticketCount: 2,
-                eventName: "Pro Kabaddi League Finals",
-                venueName: "Gachibowli Indoor Stadium",
-            },
-            {
-                userName: "navadeep",
-                userEmail: "vnavadeepreddysatti@gmail.com",
-                totalPrice: 64.0,
-                ticketCount: 8,
-                eventName: "A.R. Rahman Live Concert",
-                venueName: "Jawaharlal Nehru Stadium",
-            },
-            {
-                userName: "navadeep",
-                userEmail: "vnavadeepreddysatti@gmail.com",
-                totalPrice: 9.0,
-                ticketCount: 3,
-                eventName: "A.R. Rahman Live Concert",
-                venueName: "Jawaharlal Nehru Stadium",
-            },
-            {
-                userName: "navadeep",
-                userEmail: "vnavadeepreddysatti@gmail.com",
-                totalPrice: 36.0,
-                ticketCount: 6,
-                eventName: "A.R. Rahman Live Concert",
-                venueName: "Jawaharlal Nehru Stadium",
-            },
-            {
-                userName: "navadeep",
-                userEmail: "vnavadeepreddysatti@gmail.com",
-                totalPrice: 36.0,
-                ticketCount: 6,
-                eventName: "A.R. Rahman Live Concert",
-                venueName: "Jawaharlal Nehru Stadium",
-            },
-            {
-                userName: "navadeep",
-                userEmail: "vnavadeepreddysatti@gmail.com",
-                totalPrice: 36.0,
-                ticketCount: 6,
-                eventName: "A.R. Rahman Live Concert",
-                venueName: "Jawaharlal Nehru Stadium",
-            },
-            {
-                userName: "navadeep",
-                userEmail: "vnavadeepreddysatti@gmail.com",
-                totalPrice: 1.0,
-                ticketCount: 1,
-                eventName: "A.R. Rahman Live Concert",
-                venueName: "Jawaharlal Nehru Stadium",
-            },
-            {
-                userName: "navadeep",
-                userEmail: "vnavadeepreddysatti@gmail.com",
-                totalPrice: 25.0,
-                ticketCount: 5,
-                eventName: "A.R. Rahman Live Concert",
-                venueName: "Jawaharlal Nehru Stadium",
-            },
-            {
-                userName: "navadeep",
-                userEmail: "vnavadeepreddysatti@gmail.com",
-                totalPrice: 1.0,
-                ticketCount: 1,
-                eventName: "A.R. Rahman Live Concert",
-                venueName: "Jawaharlal Nehru Stadium",
-            },
-            {
-                userName: "navadeep",
-                userEmail: "vnavadeepreddysatti@gmail.com",
-                totalPrice: 1.0,
-                ticketCount: 1,
-                eventName: "A.R. Rahman Live Concert",
-                venueName: "Jawaharlal Nehru Stadium",
-            },
-            {
-                userName: "navadeep",
-                userEmail: "vnavadeepreddysatti@gmail.com",
-                totalPrice: 1.0,
-                ticketCount: 1,
-                eventName: "A.R. Rahman Live Concert",
-                venueName: "Jawaharlal Nehru Stadium",
-            },
-            {
-                userName: "navadeep",
-                userEmail: "vnavadeepreddysatti@gmail.com",
-                totalPrice: 81.0,
-                ticketCount: 9,
-                eventName: "A.R. Rahman Live Concert",
-                venueName: "Jawaharlal Nehru Stadium",
-            },
-            {
-                userName: "navadeep",
-                userEmail: "vnavadeepreddysatti@gmail.com",
-                totalPrice: 100.0,
-                ticketCount: 10,
-                eventName: "A.R. Rahman Live Concert",
-                venueName: "Jawaharlal Nehru Stadium",
-            },
-            {
-                userName: "navadeep",
-                userEmail: "vnavadeepreddysatti@gmail.com",
-                totalPrice: 81.0,
-                ticketCount: 9,
-                eventName: "A.R. Rahman Live Concert",
-                venueName: "Jawaharlal Nehru Stadium",
-            },
-            {
-                userName: "navadeep",
-                userEmail: "vnavadeepreddysatti@gmail.com",
-                totalPrice: 1.0,
-                ticketCount: 1,
-                eventName: "A.R. Rahman Live Concert",
-                venueName: "Jawaharlal Nehru Stadium",
-            },
-            {
-                userName: "navadeep",
-                userEmail: "vnavadeepreddysatti@gmail.com",
-                totalPrice: 1.0,
-                ticketCount: 1,
-                eventName: "Anubhav Singh Bassi - Stand-up Special",
-                venueName: "Shanmukhananda Hall",
-            },
-            {
-                userName: "navadeep",
-                userEmail: "vnavadeepreddysatti@gmail.com",
-                totalPrice: 25.0,
-                ticketCount: 5,
-                eventName: "International DJ Night",
-                venueName: "Jawaharlal Nehru Stadium",
-            },
-            {
-                userName: "navadeep",
-                userEmail: "vnavadeepreddysatti@gmail.com",
-                totalPrice: 25.0,
-                ticketCount: 5,
-                eventName: "Anubhav Singh Bassi - Stand-up Special",
-                venueName: "Shanmukhananda Hall",
-            },
-        ];
-        setOrders(mockData);
-        setFilteredOrders(mockData);
+        const fetchOrders = async () => {
+            if (userID) {
+                const data = (await getUserOrders(userID)) as BookedTicket[];
+                setOrders(data);
+                setFilteredOrders(data);
+            }
+        };
+        fetchOrders();
     }, []);
 
     useEffect(() => {

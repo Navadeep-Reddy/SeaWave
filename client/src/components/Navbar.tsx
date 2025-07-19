@@ -28,10 +28,10 @@ function NavLinks(props: any) {
                 </li>
             </Link>
 
-            <Link to="/tickets">
+            <Link to={`/tickets/${keycloak.profile?.id}`}>
                 <li
                     className={`hover:text-black hover:cursor-pointer duration-150 ${activeIcon(
-                        "/tickets"
+                        `/tickets/${keycloak.profile?.id}`
                     )}`}
                 >
                     Bookings

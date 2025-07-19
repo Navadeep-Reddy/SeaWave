@@ -41,7 +41,7 @@ const SecuredContent = () => {
                     path="/booking/:userId/:eventId"
                     element={<BookingPage />}
                 />
-                <Route path="/tickets" element={<OrdersPage />} />
+                <Route path="/tickets/:userID" element={<OrdersPage />} />
             </Routes>
         </BrowserRouter>
     );
