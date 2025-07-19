@@ -1,12 +1,16 @@
-package com.example.demo.Service;
+package com.example.Order.Service;
 
-import com.example.demo.Client.InventoryServiceClient;
-import com.example.demo.Entity.Order;
-import com.example.demo.Repository.OrderRepository;
+import com.example.Order.Client.InventoryServiceClient;
+import com.example.Order.Entity.Order;
+import com.example.Order.Repository.OrderRepository;
+import com.example.Order.Response.OrderResponse;
 import com.learn.event.BookingEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -46,5 +50,29 @@ public class OrderService {
                 .venueId(bookingEvent.getVenueId())
                 .venueName(bookingEvent.getVenueName())
                 .build();
+    }
+
+    public List<Order> getAll() {
+        return orderRepository.findAll();
+    }
+
+    public List<OrderResponse> getWithUserID(String id) {
+        List<Order> orderList = orderRepository.findOrderByUserId(id);
+
+        return orderList.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    private OrderResponse convertToDTO(Order order){
+        return OrderResponse.builder()
+                .userName(order.getUserName())
+                .userEmail(order.getUserEmail())
+                .totalPrice(order.getTotalPrice())
+                .ticketCount(order.getTicketCount())
+                .eventName(order.getEventName())
+                .venueName(order.getVenueName())
+                .build();
+
     }
 }

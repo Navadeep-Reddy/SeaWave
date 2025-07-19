@@ -1,4 +1,4 @@
-package com.example.demo.Entity;
+package com.example.Order.Entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
