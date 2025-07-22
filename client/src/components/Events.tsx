@@ -2,24 +2,35 @@ import { useEffect, useState } from "react";
 import EventBox from "./EventBox";
 import { EventInventoryResponse } from "@/types/eventTypes";
 import { getAllEvents } from "@/api/events";
+import { useAuth0 } from "@auth0/auth0-react";
 
 export default function events() {
     const [events, setEvents] = useState<EventInventoryResponse[]>();
     const [filterEvents, setFilterEvents] =
         useState<EventInventoryResponse[]>();
     const [search, setSearch] = useState<string | undefined>();
+    const { getAccessTokenSilently, isAuthenticated } = useAuth0();
 
     useEffect(() => {
         const fetchEvents = async () => {
-            const data = await getAllEvents();
-            if (data) {
-                setEvents(data);
-                setFilterEvents(data);
+            try {
+                let accessToken;
+                if (isAuthenticated) {
+                    accessToken = await getAccessTokenSilently();
+                }
+
+                const data = await getAllEvents(accessToken);
+                if (data) {
+                    setEvents(data);
+                    setFilterEvents(data);
+                }
+            } catch (error) {
+                console.error("Error fetching events:", error);
             }
         };
 
         fetchEvents();
-    }, []);
+    }, [isAuthenticated, getAccessTokenSilently]);
 
     function filterItems(keyword: string) {
         const filteredArray = events?.filter((event) =>

@@ -1,17 +1,24 @@
 import { customerType } from "@/types/customerType";
 
 export default async function verifyCustomer(
-    customer: customerType
+    customer: customerType,
+    accessToken?: string
 ): Promise<any> {
     try {
+        const headers: HeadersInit = {
+            "Content-Type": "application/json",
+        };
+
+        if (accessToken) {
+            headers.Authorization = `Bearer ${accessToken}`;
+        }
+
         const response = await fetch(
-            "http://localhost:8085/api/v1/customer/check",
+            "http://localhost:8090/api/v2/customer/check",
             {
                 method: "POST",
                 body: JSON.stringify(customer),
-                headers: {
-                    "Content-Type": "application/json",
-                },
+                headers,
             }
         );
 

@@ -12,6 +12,7 @@ const AuthProviderWrapper = ({ children }: AuthProviderWrapperProps) => {
             clientId="DdbhQiwGydxuTEWsBx6zQzKTEqy5UoUs"
             authorizationParams={{
                 redirect_uri: window.location.origin,
+                audience: "https://seawave-backend/",
             }}
         >
             {children}

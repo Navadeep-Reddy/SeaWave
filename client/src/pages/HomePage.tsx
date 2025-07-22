@@ -5,28 +5,34 @@ import { useEffect } from "react";
 import verifyCustomer from "@/api/customer";
 
 export default function HomePage() {
-    const { user, isAuthenticated, isLoading } = useAuth0();
+    const { user, isAuthenticated, isLoading, getAccessTokenSilently } =
+        useAuth0();
     console.log(user?.email);
     console.log(user?.nickname);
-    console.log(user?.sub); // This is the unique user ID string from Auth0
+    console.log(user?.sub);
 
     useEffect(() => {
-        if (isAuthenticated && user?.sub && user?.email && user?.nickname) {
-            const customer = {
-                id: user.sub,
-                email: user.email,
-                name: user.nickname,
-            };
+        const verifyUser = async () => {
+            if (isAuthenticated && user?.sub && user?.email && user?.nickname) {
+                try {
+                    const accessToken = await getAccessTokenSilently();
 
-            verifyCustomer(customer)
-                .then((data) => {
+                    const customer = {
+                        id: user.sub,
+                        email: user.email,
+                        name: user.nickname,
+                    };
+
+                    const data = await verifyCustomer(customer, accessToken);
                     console.log("Customer verification result:", data);
-                })
-                .catch((error) => {
+                } catch (error) {
                     console.error("Error verifying customer:", error);
-                });
-        }
-    }, [isAuthenticated, user]);
+                }
+            }
+        };
+
+        verifyUser();
+    }, [isAuthenticated, user, getAccessTokenSilently]);
 
     if (isLoading) {
         return <div>Loading ...</div>;

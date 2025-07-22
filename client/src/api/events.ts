@@ -1,9 +1,20 @@
 import { EventInventoryResponse } from "@/types/eventTypes";
 
-export async function getAllEvents(): Promise<EventInventoryResponse[] | null> {
+export async function getAllEvents(
+    accessToken?: string
+): Promise<EventInventoryResponse[] | null> {
     try {
         const response = await fetch(
-            "http://localhost:8090/api/v2/inventory/events"
+            "http://localhost:8090/api/v2/inventory/events",
+            {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    ...(accessToken && {
+                        Authorization: `Bearer ${accessToken}`,
+                    }),
+                },
+            }
         );
 
         if (!response.ok) {
@@ -19,11 +30,21 @@ export async function getAllEvents(): Promise<EventInventoryResponse[] | null> {
 }
 
 export async function getEventById(
-    eventID: string
+    eventID: string,
+    accessToken?: string
 ): Promise<EventInventoryResponse | null> {
     try {
         const response = await fetch(
-            `http://localhost:8090/api/v2/inventory/event/${eventID}`
+            `http://localhost:8090/api/v2/inventory/event/${eventID}`,
+            {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    ...(accessToken && {
+                        Authorization: `Bearer ${accessToken}`,
+                    }),
+                },
+            }
         );
 
         if (!response.ok) {
