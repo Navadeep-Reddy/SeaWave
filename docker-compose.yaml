@@ -214,6 +214,15 @@ services:
       KAFKA_CLUSTERS_0_SCHEMAREGISTRY: http://kafka-schema-registry:8081
     restart: unless-stopped
 
+  seawave-frontend:
+    image: navadeepreddy689/seawave-frontend
+    ports:
+      - "5173:80"
+    environment:
+      VITE_GATEWAY_URI: http://api-gateway:8090
+    depends_on:
+      - api-gateway
+
 volumes:
   pgadmin_data:
   zookeeper_data:
