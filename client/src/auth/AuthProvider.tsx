@@ -14,6 +14,7 @@ const AuthProviderWrapper = ({ children }: AuthProviderWrapperProps) => {
                 redirect_uri: window.location.origin,
                 audience: "https://seawave-backend/",
             }}
+            cacheLocation="localstorage"
         >
             {children}
         </Auth0Provider>

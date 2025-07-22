@@ -7,7 +7,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 function NavLinks(props: any) {
     const { display } = props;
     const location = useLocation();
-    const {user} = useAuth0();
+    const { user, logout } = useAuth0();
 
     const activeIcon = (path: string): string => {
         if (path == location.pathname) return "text-black/70";
@@ -40,7 +40,11 @@ function NavLinks(props: any) {
 
             <li
                 onClick={() => {
-                    console.log("Logout clicked");
+                    logout({
+                        logoutParams: {
+                            returnTo: window.location.origin
+                        }
+                    });
                 }}
                 className="hover:text-black hover:cursor-pointer duration-150"
             >

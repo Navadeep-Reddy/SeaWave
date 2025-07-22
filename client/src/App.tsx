@@ -23,7 +23,6 @@ function AppContent() {
     if (!isAuthenticated) {
         return (
             <div className="min-h-screen bg-offBlue flex flex-col items-center justify-center relative overflow-hidden">
-                {/* Decorative SVG Background */}
                 <svg
                     className="absolute top-0 left-0 w-[450px] h-[450px] md:w-[700px] md:h-[700px] opacity-30"
                     style={{ transform: "translate(-35%, -35%) rotate(25deg)" }}
@@ -50,7 +49,6 @@ function AppContent() {
                     />
                 </svg>
 
-                {/* Main Content */}
                 <div className="text-center relative z-10 px-6">
                     <h1 className="text-6xl md:text-8xl font-bold text-textBlue font-lobster mb-4">
                         SeaWave
