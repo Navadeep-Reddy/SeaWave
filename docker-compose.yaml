@@ -1,4 +1,94 @@
 services:
+  # Application Services
+  inventory-service:
+    image: navadeepreddy689/seawave-inventory:latest
+    container_name: inventory-service
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://inventory-db:5432/SeaWaveInventory
+      - SPRING_DATASOURCE_USERNAME=navadeep
+      - SPRING_DATASOURCE_PASSWORD=12345
+    depends_on:
+      inventory-db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  user-service:
+    image: navadeepreddy689/seawave-user:latest
+    container_name: user-service
+    ports:
+      - "8085:8085"
+    environment:
+      - SERVER_PORT=8085
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://user-db:5432/SeaWaveUser
+      - SPRING_DATASOURCE_USERNAME=navadeep
+      - SPRING_DATASOURCE_PASSWORD=12345
+    depends_on:
+      user-db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  booking-service:
+    image: navadeepreddy689/seawave-booking:latest
+    container_name: booking-service
+    ports:
+      - "8081:8081"
+    environment:
+      - SERVER_PORT=8081
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://booking-db:5432/SeaWave
+      - SPRING_DATASOURCE_USERNAME=navadeep
+      - SPRING_DATASOURCE_PASSWORD=12345
+      - INVENTORY_SERVICE_URL=http://inventory-service:8080/api/v1/inventory
+      - CUSTOMER_SERVICE_URL=http://user-service:8085/api/v1/customer
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka-broker:29092
+    depends_on:
+      - booking-db
+      - inventory-service
+      - user-service
+      - kafka-broker
+    restart: unless-stopped
+
+  order-service:
+    image: navadeepreddy689/seawave-order:latest
+    container_name: order-service
+    ports:
+      - "8082:8082"
+    environment:
+      - SERVER_PORT=8082
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://order-db:5432/SeaWaveOrder
+      - SPRING_DATASOURCE_USERNAME=navadeep
+      - SPRING_DATASOURCE_PASSWORD=12345
+      - INVENTORY_SERVICE_URL=http://inventory-service:8080/api/v1/inventory
+      - SPRING_KAFKA_CONSUMER_BOOTSTRAP_SERVERS=kafka-broker:29092
+    depends_on:
+      - order-db
+      - inventory-service
+      - kafka-broker
+    restart: unless-stopped
+
+  api-gateway:
+    image: navadeepreddy689/seawave-gateway:latest
+    container_name: api-gateway
+    ports:
+      - "8090:8090"
+    environment:
+      - SERVER_PORT=8090
+      # --- CORRECTED LINES ---
+      - KEYCLOAK_AUTH_JWK_URI=http://keycloak:8080/realms/master/protocol/openid-connect/certs
+      - SPRING_SECURITY_OAUTH2_AUTHORIZATIONSERVER_ISSUER=http://keycloak:8080/realms/master
+ 
+      - INVENTORY_SERVICE_URI=http://inventory-service:8080
+      - BOOKING_SERVICE_URI=http://booking-service:8081
+      - ORDER_SERVICE_URI=http://order-service:8082
+      - USER_SERVICE_URI=http://user-service:8085
+    depends_on:
+      - booking-service
+      - order-service
+      - inventory-service
+    restart: unless-stopped
+
+  # Infrastructure Services
   inventory-db:
     image: postgres:15-alpine
     container_name: inventory-db-container
@@ -16,7 +106,25 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-      
+
+  booking-db: # NEWLY ADDED
+    image: postgres:15-alpine
+    container_name: booking-db-container
+    environment:
+      POSTGRES_PASSWORD: "12345"
+      POSTGRES_USER: navadeep
+      POSTGRES_DB: SeaWave
+    volumes:
+      - booking_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U navadeep -d SeaWave"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   order-db:
     image: postgres:15-alpine
     container_name: order-db-container
@@ -34,7 +142,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-      
+
   user-db:
     image: postgres:15-alpine
     container_name: user-db-container
@@ -51,21 +159,22 @@ services:
       test: ["CMD-SHELL", "pg_isready -U navadeep -d SeaWaveUser"]
       interval: 10s
       timeout: 5s
-      retries: 5 
-    
+      retries: 5
+
   pgadmin:
     image: dpage/pgadmin4:8
     container_name: pgadmin_controller
     environment:
       PGADMIN_DEFAULT_EMAIL: navadeep@gmail.com
-      PGADMIN_DEFAULT_PASSWORD: "2005"
+      PGADMIN_DEFAULT_PASSWORD: "2005" # It's a good practice to change this
       PGADMIN_CONFIG_SERVER_MODE: "False"
     ports:
       - "8000:80"
     volumes:
       - pgadmin_data:/var/lib/pgadmin
     restart: unless-stopped
-    
+
+
   zookeeper:
     image: confluentinc/cp-zookeeper:7.4.0
     container_name: kafka_zookeeper
@@ -74,93 +183,42 @@ services:
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
-      ZOOKEEPER_SYNC_LIMIT: 2
-    volumes:
-      - zookeeper_data:/var/lib/zookeeper/data
-      - zookeeper_logs:/var/lib/zookeeper/log
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "nc", "-z", "localhost", "2181"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      
+
   kafka-broker:
     image: confluentinc/cp-kafka:7.4.0
     container_name: kafka_broker
     ports:
       - "9092:9092"
-      - "29092:29092"
     depends_on:
-      zookeeper:
-        condition: service_healthy
+      - zookeeper
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-broker:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,INTERNAL:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,INTERNAL://kafka-broker:29092
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
-      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
-      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
-      KAFKA_JMX_PORT: 9101
-      KAFKA_JMX_HOSTNAME: localhost
-    volumes:
-      - kafka_data:/var/lib/kafka/data
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 60s
-      
+    
   kafka-ui:
     container_name: kafka_ui
     image: provectuslabs/kafka-ui:latest
     ports:
       - "8084:8080"
     depends_on:
-      kafka-broker:
-        condition: service_healthy
+      - kafka-broker
     environment:
       KAFKA_CLUSTERS_0_NAME: local
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka-broker:29092
       KAFKA_CLUSTERS_0_SCHEMAREGISTRY: http://kafka-schema-registry:8081
     restart: unless-stopped
-    
-  kafka-schema-registry:
-    image: confluentinc/cp-schema-registry:7.4.0
-    hostname: kafka-schema-registry
-    container_name: kafka_schema_registry
-    depends_on:
-      kafka-broker:
-        condition: service_healthy
-    ports:
-      - "8083:8081"
-    environment:
-      SCHEMA_REGISTRY_HOST_NAME: kafka-schema-registry
-      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'kafka-broker:29092'
-      SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081
-    volumes:
-      - schema_registry_data:/var/lib/schema-registry
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8081/subjects"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 60s
 
 volumes:
   pgadmin_data:
   zookeeper_data:
-  zookeeper_logs:
   kafka_data:
-  schema_registry_data:
   user_data:
   order_data:
   inventory_data:
-  
-  
-
+  booking_data:
