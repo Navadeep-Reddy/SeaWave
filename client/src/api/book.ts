@@ -1,7 +1,8 @@
 export async function bookEvent(
     userId: string,
     eventId: string,
-    ticketQty: number
+    ticketQty: number,
+    accessToken?: string
 ) {
     const postObject = {
         userId: userId,
@@ -16,6 +17,9 @@ export async function bookEvent(
             body: JSON.stringify(postObject),
             headers: {
                 "Content-Type": "application/json",
+                ...(accessToken && {
+                    Authorization: `Bearer ${accessToken}`,
+                }),
             },
         });
 

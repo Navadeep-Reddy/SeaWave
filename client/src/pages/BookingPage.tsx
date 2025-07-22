@@ -5,6 +5,7 @@ import { getEventById } from "@/api/events";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { bookEvent } from "@/api/book";
+import { useAuth0 } from "@auth0/auth0-react";
 
 export default function BookingPage() {
     const [event, setEvent] = useState<EventInventoryResponse>();
@@ -12,18 +13,30 @@ export default function BookingPage() {
     const [isLoading, setIsLoading] = useState(false);
     const { eventId, userId } = useParams();
     const navigate = useNavigate();
+    const { getAccessTokenSilently, isAuthenticated } = useAuth0();
 
     const submitBooking = async () => {
         try {
             setIsLoading(true);
             if (userId && event && ticketQuantity) {
                 console.log("Booking Initiated");
-                await bookEvent(userId, event?.eventId, ticketQuantity);
+
+                let accessToken;
+                if (isAuthenticated) {
+                    accessToken = await getAccessTokenSilently();
+                }
+
+                await bookEvent(
+                    userId,
+                    event?.eventId,
+                    ticketQuantity,
+                    accessToken
+                );
                 alert("Successfully booked");
                 navigate("/");
             }
-        } catch {
-            console.log("Failed to book");
+        } catch (error) {
+            console.log("Failed to book:", error);
         } finally {
             setIsLoading(false);
         }
@@ -33,16 +46,26 @@ export default function BookingPage() {
         const fetchEvent = async () => {
             if (!eventId) return null;
 
-            const data: EventInventoryResponse = (await getEventById(
-                eventId
-            )) as EventInventoryResponse;
+            try {
+                let accessToken;
+                if (isAuthenticated) {
+                    accessToken = await getAccessTokenSilently();
+                }
 
-            setEvent(data);
-            console.log(data);
+                const data: EventInventoryResponse = (await getEventById(
+                    eventId,
+                    accessToken
+                )) as EventInventoryResponse;
+
+                setEvent(data);
+                console.log(data);
+            } catch (error) {
+                console.error("Error fetching event:", error);
+            }
         };
 
         fetchEvent();
-    }, [eventId]);
+    }, [eventId, isAuthenticated, getAccessTokenSilently]);
 
     const estimatedPrice = event ? ticketQuantity * event.ticketPrice : 0;
 

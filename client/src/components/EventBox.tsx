@@ -1,8 +1,10 @@
 import { Link } from "react-router-dom";
 import { Button } from "./ui/button";
+import { useAuth0 } from "@auth0/auth0-react";
 
 export default function EventBox(props: any) {
     const { name, capacity, venue, id } = props;
+    const {user} = useAuth0();
     return (
         <div className="w-full h-20 md:h-20 rounded-md  bg-offBlue mx-auto md:mx-0 mb-4 md:mb-8  p-2 flex justify-between items-center ">
             <div className="details m-1 basis-2/3 min-w-0">
@@ -23,7 +25,7 @@ export default function EventBox(props: any) {
                     </div>
                 </div>
             </div>
-            <Link to={`/booking/user-id/${id}`}>
+            <Link to={`/booking/${user?.sub}/${id}`}>
                 <Button className="bg-textBlue text-white font-semibold h-16 w-16 hover:bg-weirdBlue hover:text-textBlue hover:cursor-pointer">
                     Register
                 </Button>
