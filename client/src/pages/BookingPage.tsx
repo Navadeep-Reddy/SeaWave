@@ -5,14 +5,12 @@ import { getEventById } from "@/api/events";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { bookEvent } from "@/api/book";
-import { useKeycloak } from "@react-keycloak/web";
 
 export default function BookingPage() {
     const [event, setEvent] = useState<EventInventoryResponse>();
     const [ticketQuantity, setTicketQuantity] = useState(1);
     const [isLoading, setIsLoading] = useState(false);
     const { eventId, userId } = useParams();
-    const { keycloak } = useKeycloak();
     const navigate = useNavigate();
 
     const submitBooking = async () => {
@@ -20,12 +18,7 @@ export default function BookingPage() {
             setIsLoading(true);
             if (userId && event && ticketQuantity) {
                 console.log("Booking Initiated");
-                await bookEvent(
-                    userId,
-                    event?.eventId,
-                    ticketQuantity,
-                    keycloak
-                );
+                await bookEvent(userId, event?.eventId, ticketQuantity);
                 alert("Successfully booked");
                 navigate("/");
             }
@@ -41,8 +34,7 @@ export default function BookingPage() {
             if (!eventId) return null;
 
             const data: EventInventoryResponse = (await getEventById(
-                eventId,
-                keycloak
+                eventId
             )) as EventInventoryResponse;
 
             setEvent(data);
@@ -50,7 +42,7 @@ export default function BookingPage() {
         };
 
         fetchEvent();
-    }, [eventId, keycloak]);
+    }, [eventId]);
 
     const estimatedPrice = event ? ticketQuantity * event.ticketPrice : 0;
 

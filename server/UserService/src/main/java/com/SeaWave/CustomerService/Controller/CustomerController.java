@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
+@CrossOrigin
 @RestController
 @RequestMapping(path = "/api/v1/customer")
 public class CustomerController {
@@ -29,7 +30,7 @@ public class CustomerController {
         return ResponseEntity.ok(customerList);
     }
 
-    @PostMapping(consumes = "application/json", produces = "application/json", path="/")
+    @PostMapping(consumes = "application/json", produces = "application/json", path="/check")
     private ResponseEntity<CustomerResponse> checkCreateCustomer(@RequestBody CustomerRequest request){
         return customerService.checkOrCreateCustomer(request);
     }

@@ -1,4 +1,3 @@
-import keycloak from "@/auth/keycloak";
 import { BookedTicket } from "@/types/orderTypes";
 
 export default async function getUserOrders(
@@ -6,12 +5,7 @@ export default async function getUserOrders(
 ): Promise<BookedTicket[]> {
     try {
         const response = await fetch(
-            `http://localhost:8090/api/v2/order/${userID}`,
-            {
-                headers: {
-                    Authorization: `Bearer ${keycloak.token}`,
-                },
-            }
+            `http://localhost:8090/api/v2/order/${userID}`
         );
 
         if (!response.ok) {

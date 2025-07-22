@@ -2,12 +2,10 @@ import { useEffect, useState } from "react";
 import Logo from "../../src/assets/logo.svg";
 import { Menu, X } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
-import { useKeycloak } from "@react-keycloak/web";
 
 function NavLinks(props: any) {
     const { display } = props;
     const location = useLocation();
-    const { keycloak } = useKeycloak();
 
     const activeIcon = (path: string): string => {
         if (path == location.pathname) return "text-black/70";
@@ -28,10 +26,10 @@ function NavLinks(props: any) {
                 </li>
             </Link>
 
-            <Link to={`/tickets/${keycloak.profile?.id}`}>
+            <Link to={`/tickets/user-id`}>
                 <li
                     className={`hover:text-black hover:cursor-pointer duration-150 ${activeIcon(
-                        `/tickets/${keycloak.profile?.id}`
+                        `/tickets/user-id`
                     )}`}
                 >
                     Bookings
@@ -40,7 +38,7 @@ function NavLinks(props: any) {
 
             <li
                 onClick={() => {
-                    keycloak.logout();
+                    console.log("Logout clicked");
                 }}
                 className="hover:text-black hover:cursor-pointer duration-150"
             >

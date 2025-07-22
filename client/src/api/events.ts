@@ -1,17 +1,9 @@
-import keycloak from "@/auth/keycloak";
 import { EventInventoryResponse } from "@/types/eventTypes";
 
-export async function getAllEvents(
-    keycloak: any
-): Promise<EventInventoryResponse[] | null> {
+export async function getAllEvents(): Promise<EventInventoryResponse[] | null> {
     try {
         const response = await fetch(
-            "http://localhost:8090/api/v2/inventory/events",
-            {
-                headers: {
-                    ["Authorization"]: `Bearer ${keycloak.token}`,
-                },
-            }
+            "http://localhost:8090/api/v2/inventory/events"
         );
 
         if (!response.ok) {
@@ -27,17 +19,11 @@ export async function getAllEvents(
 }
 
 export async function getEventById(
-    eventID: string,
-    keycloak: any
+    eventID: string
 ): Promise<EventInventoryResponse | null> {
     try {
         const response = await fetch(
-            `http://localhost:8090/api/v2/inventory/event/${eventID}`,
-            {
-                headers: {
-                    ["Authorization"]: `Bearer ${keycloak.token}`,
-                },
-            }
+            `http://localhost:8090/api/v2/inventory/event/${eventID}`
         );
 
         if (!response.ok) {

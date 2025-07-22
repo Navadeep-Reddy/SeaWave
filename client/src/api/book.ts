@@ -1,8 +1,7 @@
 export async function bookEvent(
     userId: string,
     eventId: string,
-    ticketQty: number,
-    keycloak: any
+    ticketQty: number
 ) {
     const postObject = {
         userId: userId,
@@ -17,7 +16,6 @@ export async function bookEvent(
             body: JSON.stringify(postObject),
             headers: {
                 "Content-Type": "application/json",
-                ["Authorization"]: `Bearer ${keycloak.token}`,
             },
         });
 

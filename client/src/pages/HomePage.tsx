@@ -1,50 +1,36 @@
 import Hero from "@/components/Hero";
 import Events from "@/components/Events";
+import { useAuth0 } from "@auth0/auth0-react";
 import { useEffect } from "react";
-import { useKeycloak } from "@react-keycloak/web";
 import verifyCustomer from "@/api/customer";
-import { customerType } from "@/types/customerType";
 
 export default function HomePage() {
-    const { keycloak } = useKeycloak();
+    const { user, isAuthenticated, isLoading } = useAuth0();
+    console.log(user?.email);
+    console.log(user?.nickname);
+    console.log(user?.sub); // This is the unique user ID string from Auth0
+
     useEffect(() => {
-        const loadProfile = async () => {
-            try {
-                await keycloak.loadUserProfile();
-                console.log(keycloak.profile);
-            } catch (error) {
-                console.log(error);
-            }
-        };
-
-        const checkProfile = async () => {
-            if (
-                !keycloak.profile?.id ||
-                !keycloak.profile?.email ||
-                !keycloak.profile?.username
-            )
-                return;
-            let customer: customerType = {
-                id: keycloak?.profile?.id,
-                name: keycloak.profile?.username,
-                email: keycloak.profile?.email,
+        if (isAuthenticated && user?.sub && user?.email && user?.nickname) {
+            const customer = {
+                id: user.sub,
+                email: user.email,
+                name: user.nickname,
             };
-            try {
-                const data = await verifyCustomer(customer);
-                console.log(data);
-            } catch (error) {
-                console.error(error);
-            }
-        };
 
-        const initializeProfile = async () => {
-            await loadProfile();
-            await checkProfile();
-        };
+            verifyCustomer(customer)
+                .then((data) => {
+                    console.log("Customer verification result:", data);
+                })
+                .catch((error) => {
+                    console.error("Error verifying customer:", error);
+                });
+        }
+    }, [isAuthenticated, user]);
 
-        initializeProfile();
-    }, []);
-
+    if (isLoading) {
+        return <div>Loading ...</div>;
+    }
     return (
         <div>
             <Hero />

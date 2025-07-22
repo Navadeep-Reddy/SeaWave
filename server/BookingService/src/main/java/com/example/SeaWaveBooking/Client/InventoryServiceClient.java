@@ -14,7 +14,7 @@ public class InventoryServiceClient {
     private String inventoryServiceUrl;
     final RestTemplate restTemplate = new RestTemplate();
 
-    
+
 
     public BookingInventoryResponse bookInventoryCapacity(BookingInventoryRequest request){
         try{
