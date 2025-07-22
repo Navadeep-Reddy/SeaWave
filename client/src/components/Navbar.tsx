@@ -2,10 +2,12 @@ import { useEffect, useState } from "react";
 import Logo from "../../src/assets/logo.svg";
 import { Menu, X } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
+import { useAuth0 } from "@auth0/auth0-react";
 
 function NavLinks(props: any) {
     const { display } = props;
     const location = useLocation();
+    const {user} = useAuth0();
 
     const activeIcon = (path: string): string => {
         if (path == location.pathname) return "text-black/70";
@@ -26,10 +28,10 @@ function NavLinks(props: any) {
                 </li>
             </Link>
 
-            <Link to={`/tickets/user-id`}>
+            <Link to={`/tickets/${user?.sub}`}>
                 <li
                     className={`hover:text-black hover:cursor-pointer duration-150 ${activeIcon(
-                        `/tickets/user-id`
+                        `/tickets/${user?.sub}`
                     )}`}
                 >
                     Bookings

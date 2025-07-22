@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { BookedTicket } from "@/types/orderTypes";
 import getUserOrders from "@/api/order";
 import { useParams } from "react-router-dom";
+import { useAuth0 } from "@auth0/auth0-react";
 
 export default function OrdersPage() {
     const [orders, setOrders] = useState<BookedTicket[]>([]);
@@ -10,11 +11,16 @@ export default function OrdersPage() {
     const [searchTerm, setSearchTerm] = useState("");
     const [sortBy, setSortBy] = useState<"date" | "price" | "event">("date");
     const { userID } = useParams();
+    const { getAccessTokenSilently } = useAuth0();
 
     useEffect(() => {
         const fetchOrders = async () => {
+            const accessToken = await getAccessTokenSilently();
             if (userID) {
-                const data = (await getUserOrders(userID)) as BookedTicket[];
+                const data = (await getUserOrders(
+                    userID,
+                    accessToken
+                )) as BookedTicket[];
                 setOrders(data);
                 setFilteredOrders(data);
             }

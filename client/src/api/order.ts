@@ -1,11 +1,18 @@
 import { BookedTicket } from "@/types/orderTypes";
 
 export default async function getUserOrders(
-    userID: string
+    userID: string,
+    accessToken: string
 ): Promise<BookedTicket[]> {
     try {
+        userID = encodeURIComponent(userID);
         const response = await fetch(
-            `http://localhost:8090/api/v2/order/${userID}`
+            `http://localhost:8090/api/v2/order/${userID}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            }
         );
 
         if (!response.ok) {
