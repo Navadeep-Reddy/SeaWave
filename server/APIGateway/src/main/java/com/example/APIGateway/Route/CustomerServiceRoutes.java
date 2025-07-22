@@ -15,7 +15,7 @@ public class CustomerServiceRoutes {
     public RouteLocator customerServiceRouter(RouteLocatorBuilder builder){
         return builder.routes()
                 .route("customer-check", r -> r
-                        .path("/api/v2/customer")
+                        .path("/api/v2/customer/check")
                         .filters(f -> f.rewritePath("/api/v2/customer/check", "/api/v1/customer/check"))
                         .uri(uri))
                 .build();
