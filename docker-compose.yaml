@@ -90,14 +90,12 @@ services:
 
   # Infrastructure Services
   inventory-db:
-    image: postgres:15-alpine
+    image: navadeepreddy689/seawave-inventory-postgres 
     container_name: inventory-db-container
     environment:
       POSTGRES_PASSWORD: "12345"
       POSTGRES_USER: navadeep
       POSTGRES_DB: SeaWaveInventory
-    volumes:
-      - inventory_data:/var/lib/postgresql/data
     ports:
       - "5434:5432"
     restart: unless-stopped
@@ -229,5 +227,4 @@ volumes:
   kafka_data:
   user_data:
   order_data:
-  inventory_data:
   booking_data:
