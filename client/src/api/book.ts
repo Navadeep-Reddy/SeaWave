@@ -12,16 +12,19 @@ export async function bookEvent(
     };
 
     try {
-        const response = await fetch("http://localhost:8090/api/v2/booking", {
-            method: "POST",
-            body: JSON.stringify(postObject),
-            headers: {
-                "Content-Type": "application/json",
-                ...(accessToken && {
-                    Authorization: `Bearer ${accessToken}`,
-                }),
-            },
-        });
+        const response = await fetch(
+            `${import.meta.env.VITE_GATEWAY_URI}/api/v2/booking`,
+            {
+                method: "POST",
+                body: JSON.stringify(postObject),
+                headers: {
+                    "Content-Type": "application/json",
+                    ...(accessToken && {
+                        Authorization: `Bearer ${accessToken}`,
+                    }),
+                },
+            }
+        );
 
         if (!response.ok) {
             throw new Error(`Failed while Booking with ${postObject}`);

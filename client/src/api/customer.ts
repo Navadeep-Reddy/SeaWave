@@ -14,7 +14,7 @@ export default async function verifyCustomer(
         }
 
         const response = await fetch(
-            "http://localhost:8090/api/v2/customer/check",
+            `${import.meta.env.VITE_GATEWAY_URI}/api/v2/customer/check`,
             {
                 method: "POST",
                 body: JSON.stringify(customer),

@@ -7,7 +7,7 @@ export default async function getUserOrders(
     try {
         userID = encodeURIComponent(userID);
         const response = await fetch(
-            `http://localhost:8090/api/v2/order/${userID}`,
+            `${import.meta.env.VITE_GATEWAY_URI}/api/v2/order/${userID}`,
             {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,

@@ -5,7 +5,7 @@ export async function getAllEvents(
 ): Promise<EventInventoryResponse[] | null> {
     try {
         const response = await fetch(
-            "http://localhost:8090/api/v2/inventory/events",
+            `${import.meta.env.VITE_GATEWAY_URI}/api/v2/inventory/events`,
             {
                 method: "GET",
                 headers: {
@@ -35,7 +35,9 @@ export async function getEventById(
 ): Promise<EventInventoryResponse | null> {
     try {
         const response = await fetch(
-            `http://localhost:8090/api/v2/inventory/event/${eventID}`,
+            `${
+                import.meta.env.VITE_GATEWAY_URI
+            }/api/v2/inventory/event/${eventID}`,
             {
                 method: "GET",
                 headers: {
